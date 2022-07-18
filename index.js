@@ -1,14 +1,14 @@
 let [x, y] = [20, 10];
 
 let aux = true;
-const speed = 10;
-globalCoords = [
-  [30, 30],
-  [60, 30],
-  [90, 60],
-  [120, 60],
-  [150, 90],
-];
+const speed = 7;
+// globalCoords = [
+//   [80, 30],
+//   [150, 60],
+//   [230, 90],
+//   [290, 120],
+//   [350, 140],
+// ];
 
 const drawLine = (coord) => {
   aux = false;
@@ -20,20 +20,26 @@ const drawLine = (coord) => {
   ctx.beginPath();
   const calc = canvas.height - prev[1];
   prev[1] = calc === 0 ? canvas.height : canvas.height - prev[1];
-  ctx.moveTo(prev[0]+skipx,prev[1]);
+  ctx.moveTo(prev[0] + skipx, prev[1]);
   const y3 = canvas.height - coord[1];
   // console.log('prev: ',prev,', y3: ',y3);
   let [a, b] = [prev[0], prev[1]];
+  drawBottom(a + skipx);
   let [calca, calcb] = [Math.abs(prev[0] - coord[0]), Math.abs(b - y3)];
   const _timer2 = setInterval(() => {
     // console.log(`${a}-${prev[0]}, ${calca} | ${b}-${y3}, ${calcb}`);
     // console.log(`finish: ${a}===${prev[0]}&&${b}===${y3} | ${calca}, ${calcb}`);
     if (a === prev[0] && b === y3) {
-      clearInterval(_timer2);
-      [dotx,doty]=[a,b];
+      dotx = a;
+      doty= b;
       aux = true;
+      if(!globalCoords.length){
+        drawXY(a,b);
+        // drawBottom(a + skipx);
+      }
+      clearInterval(_timer2);
     }
-    ctx.lineTo(a+skipx, b);
+    ctx.lineTo(a + skipx, b - skipy);
     if (b !== y3) b < y3 ? b++ : b--;
     if (a < prev[0]) a++;
     if (calca > 0) calca--;
@@ -50,13 +56,12 @@ const drawDots = () => {
   let prev = 0;
   const distance = 30;
   const startAt = 3;
-  console.log('canvas.width: ',canvas.width);
+  const skip = 7;
   [...new Array(10)].forEach((_, i) => {
-    if (i < startAt) return;
+    if (i < startAt || i > skip) return;
     [...new Array(canvas.width)].forEach((_$, j) => {
       const [x1, x2] = [3 * j, 3 * (j + 1)];
       if (x1 === prev) return;
-      console.log(`x1: ${x1}, x2: ${x2}`);
       prev = x2;
       ctx.moveTo(x1, (i + 1) * distance);
       ctx.lineTo(x2, (i + 1) * distance);
@@ -66,15 +71,44 @@ const drawDots = () => {
   });
 };
 
-const drawXY = (x,y) => {
+const drawBottom = (x = 30) => {
   const ctx = canvas.getContext("2d");
-  for(let i=5;i>=0;i--){
-    ctx.strokeStyle = i>2?"#854AF2":"#fff";
+  ctx.beginPath();
+  const y = canvas.height - 40;
+  ctx.moveTo(0, y);
+  ctx.lineTo(canvas.width, y);
+  ctx.strokeStyle = "#b7bece";
+  ctx.stroke();
+
+  const y3 = canvas.height-32;
+  const y4 = canvas.height-49;
+  
+  ctx.beginPath();
+  // if(globalCoords.length){
+    ctx.moveTo(x, y3);
+    ctx.lineTo(x, y4);
+  // }
+  console.log('y3: ',y3,', y4: ',y4);
+  ctx.strokeStyle = "#b7bece";
+  ctx.stroke();
+  ctx.font = '12px serif';
+  ctx.fillText(dates[dateCount], x-15, y4+35);
+  dateCount++;
+};
+
+const dates = ['NOW','2023','2024','2025','2026','2027'];
+let dateCount = 0;
+
+const drawXY = (x, y) => {
+  const ctx = canvas.getContext("2d");
+  for (let i = 5; i >= 0; i--) {
+    ctx.strokeStyle = i > 2 ? "#854AF2" : "#fff";
     ctx.beginPath();
-    ctx.arc(x, y, i, 0, 2 * Math.PI);
+    ctx.arc(x + skipx, y - skipy, i, 0, 2 * Math.PI);
     ctx.stroke();
   }
-}
+  console.log(dateCount);
+};
 
 const clearCanvas = () => {
   const ctx = canvas.getContext("2d");
@@ -104,7 +138,7 @@ textContent.append(subtitle);
 div.append(textContent);
 const canvas = document.createElement("canvas");
 const width = "450";
-const height = "280";
+const height = "310";
 canvas.width = width;
 canvas.height = height;
 
@@ -146,35 +180,20 @@ const line = document.createElement("div");
 line.setAttribute("class", "background");
 div.append(line);
 const _timer = setInterval(() => {
-  if (!globalCoords.length){
+  if (!globalCoords.length) {
     clearInterval(_timer);
-  }
-  else {
-    // while(globalCoords.length){
-    // const flag =
+  } else {
     if (aux) {
       drawLine(globalCoords[0]);
-      drawXY(dotx,doty);
-      console.log(`runing! dotx: ${dotx}, doty: ${doty}`);
-      // if(flag)
-      // globalCoords.shift();
-      // else
-      //   continue;
-      // }
+      drawXY(dotx, doty);
       globalCoords.shift();
     }
   }
-  //   if(x<300)
-  //     x++;
-  //   if(y<300)
-  //     y++;
-  //   const result = canvas.width+canvas.height;
-  //   const addition = (x+y);
-  //   console.log(`${addition} == ${result}`);
 }, speed);
 const elements = [div];
 for (const element of elements) root.append(element);
 drawDots();
-const [skipx,skipy] = [0,canvas.height-10];
-let prev = [0,canvas.height];
-let [dotx,doty] = [0,prev[1]];
+const [skipx, skipy] = [50, 70];
+let prev = [0, canvas.height];
+let [dotx, doty] = [0, prev[1]];
+console.log('globalCoords: ',globalCoords);

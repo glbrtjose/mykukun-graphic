@@ -8,7 +8,17 @@
   <title>Document</title>
 </head>
 <body>
+  <?php
+    $globalCoords = [
+      [80, 30],
+      [150, 60],
+      [230, 90],
+      [290, 120],
+      [350, 140]
+    ]
+  ?>
   <div id="root"></div>
-  <script src="index.js"></script>
+<script type="text/javascript">var globalCoords = <?php echo json_encode($globalCoords); ?></script>
+  <script type="text/javascript" src="index.js"></script>
 </body>
 </html>
