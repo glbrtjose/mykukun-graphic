@@ -2,40 +2,25 @@ let [x, y] = [20, 10];
 
 let aux = true;
 const speed = 7;
-// globalCoords = [
-//   [80, 30],
-//   [150, 60],
-//   [230, 90],
-//   [290, 120],
-//   [350, 140],
-// ];
 
 const drawLine = (coord) => {
   aux = false;
-  let coordenates = inputs.map(
-    (input) => document.getElementById(input.placeholder).value
-  );
-  //drawing
   const ctx = canvas.getContext("2d");
   ctx.beginPath();
   const calc = canvas.height - prev[1];
   prev[1] = calc === 0 ? canvas.height : canvas.height - prev[1];
   ctx.moveTo(prev[0] + skipx, prev[1]);
   const y3 = canvas.height - coord[1];
-  // console.log('prev: ',prev,', y3: ',y3);
   let [a, b] = [prev[0], prev[1]];
   drawBottom(a + skipx);
   let [calca, calcb] = [Math.abs(prev[0] - coord[0]), Math.abs(b - y3)];
   const _timer2 = setInterval(() => {
-    // console.log(`${a}-${prev[0]}, ${calca} | ${b}-${y3}, ${calcb}`);
-    // console.log(`finish: ${a}===${prev[0]}&&${b}===${y3} | ${calca}, ${calcb}`);
     if (a === prev[0] && b === y3) {
       dotx = a;
       doty= b;
       aux = true;
       if(!globalCoords.length){
         drawXY(a,b);
-        // drawBottom(a + skipx);
       }
       clearInterval(_timer2);
     }
@@ -142,38 +127,6 @@ const height = "310";
 canvas.width = width;
 canvas.height = height;
 
-//create button/inputs
-const inputs = [
-  { placeholder: "x", value: x },
-  { placeholder: "cp1x", value: canvas.width - y },
-  { placeholder: "cp2x", value: 0 },
-  { placeholder: "y", value: canvas.height },
-  { placeholder: "cp1y", value: 0 },
-  { placeholder: "cp2y", value: canvas.height },
-];
-inputs
-  .map((item, index) => {
-    const container = document.createElement("div");
-    const span = document.createElement("span");
-    const input = document.createElement("input");
-    input.setAttribute("id", item.placeholder);
-    input.setAttribute("placeholder", item.placeholder);
-    input.setAttribute("value", item.value);
-    input.addEventListener("input", drawLine);
-    span.innerText = `${item.placeholder}: `;
-    container.append(span);
-    container.append(input);
-    return container;
-  })
-  .forEach((input) => root.append(input));
-const button = document.createElement("button");
-button.innerText = "submit";
-button.addEventListener("click", drawLine);
-const clear = document.createElement("button");
-clear.innerText = "clear";
-clear.addEventListener("click", clearCanvas);
-root.append(button);
-root.append(clear);
 
 div.append(canvas);
 const line = document.createElement("div");
